@@ -1,0 +1,9 @@
+development:
+  adapter: mysql2
+  database: autolab
+  pool: 5
+  username: autolab
+  password: password
+  host: db
+  variables:
+    sql_mode: NO_ENGINE_SUBSTITUTION
