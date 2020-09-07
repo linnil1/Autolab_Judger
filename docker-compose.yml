@@ -21,10 +21,19 @@ services:
 
   db:
     image: mysql:8.0
-    ports:
-      - 13000:3000
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
     volumes:
       - ./database:/var/lib/mysql
+
+  web:
+    image: nginx
+    restart: always
+    ports:
+      - 13000:13000
+    links:
+      - autolab
+    volumes:
+      - ./web/autolab.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
