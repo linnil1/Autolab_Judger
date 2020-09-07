@@ -1,0 +1,30 @@
+version: "3"
+services:
+  autolab:
+    image: linnil1/autolab
+    restart: always
+    environment:
+      RESTFUL_HOST: localhost
+      RESTFUL_PORT: 3000
+      RESTFUL_KEY: password
+    links:
+      - db
+    volumes:
+      - ./Autolab:/app:ro
+      - ./autolab/tmp:/app/tmp
+      - ./autolab/log:/app/log
+      - ./autolab/db:/app/db
+      - ./autolab/courses:/app/courses
+      - ./autolab/assessmentConfig:/app/assessmentConfig
+      - ./autolab/courseConfig:/app/courseConfig
+      - ./autolab/gradebooks:/app/gradebooks
+
+  db:
+    image: mysql:8.0
+    ports:
+      - 13000:3000
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - ./database:/var/lib/mysql
