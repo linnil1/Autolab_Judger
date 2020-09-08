@@ -20,12 +20,16 @@ cd ..
 cp -r Autolab/db autolab/
 mkdir -p Autolab/tmp Autolab/courses Autolab/assessmentConfig Autolab/courseConfig Autolab/gradebooks Autolab/log
 
+# Edit manullay
+cat docker-compose.yml
+cat web/nginx.conf
+
 # Main
 docker-compose up -d
 
 # After
 # Modify database (Run maually)
-docker exec -it $(docker ps -q -f name=autolab_db_1) mysql -p
+docker-compose exec db mysql -p
 CREATE USER 'autolab'@'%' IDENTIFIED WITH mysql_native_password BY 'password';
 FLUSH PRIVILEGES;
 grant all privileges on autolab.* to 'autolab'@'%';
@@ -33,7 +37,8 @@ SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));
 exit
 
 # Update Database
-docker exec -it $(docker ps -q -f name=autolab_autolab_1) bundle exec rake db:create
-docker exec -it $(docker ps -q -f name=autolab_autolab_1) bundle exec rake db:reset
-docker exec -it $(docker ps -q -f name=autolab_autolab_1) bundle exec rake db:migrate
-docker exec -it $(docker ps -q -f name=autolab_autolab_1) bundle exec rake autolab:populate
+docker-compose exec autolab bundle exec rake db:environment:set RAILS_ENV=development
+docker-compose exec autolab bundle exec rake db:create
+docker-compose exec autolab bundle exec rake db:reset
+docker-compose exec autolab bundle exec rake db:migrate
+docker-compose exec autolab bundle exec rake autolab:populate

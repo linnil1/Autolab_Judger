@@ -7,6 +7,7 @@ services:
       RESTFUL_HOST: localhost
       RESTFUL_PORT: 3000
       RESTFUL_KEY: password
+    # command: tail -f /dev/null
     links:
       - db
     volumes:
@@ -20,7 +21,7 @@ services:
       - ./autolab/gradebooks:/app/gradebooks
 
   db:
-    image: mysql:8.0
+    image: mysql:5.7
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
