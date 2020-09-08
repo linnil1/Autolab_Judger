@@ -4,12 +4,13 @@ services:
     image: linnil1/autolab
     restart: always
     environment:
-      RESTFUL_HOST: localhost
+      RESTFUL_HOST: tango_api
       RESTFUL_PORT: 3000
       RESTFUL_KEY: password
     # command: tail -f /dev/null
     links:
       - db
+      - tango_api
     volumes:
       - ./Autolab:/app:ro
       - ./autolab/tmp:/app/tmp
@@ -38,3 +39,36 @@ services:
     volumes:
       - ./web/autolab.conf:/etc/nginx/conf.d/default.conf:ro
       - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./autolab/web_log:/var/log/nginx/
+
+  redis:
+    image: redis
+    restart: always
+    command: redis-server /etc/redis.conf
+    volumes:
+      - ./Tango/deployment/config/redis.conf:/etc/redis.conf
+
+  tango_api:
+    image: linnil1/tango
+    restart: always
+    command: python3 restful-tango/server.py
+    links:
+      - redis
+    volumes:
+    - ./Tango/:/app:ro
+    - ./tango/courselabs/:/courselabs
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /volume/:/volume
+
+  tango_manager:
+    image: linnil1/tango
+    restart: always
+    command: python3 jobManager.py
+    links:
+      - redis
+      - web
+    volumes:
+    - ./Tango/:/app:ro
+    - ./tango/courselabs/:/courselabs
+    - /var/run/docker.sock:/var/run/docker.sock:ro
+    - /volume/:/volume
