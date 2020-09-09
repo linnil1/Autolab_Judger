@@ -4,6 +4,9 @@ exit
 # Before
 #
 
+# generate self-host ssl
+bash create_cert.sh
+
 # clone tango
 git clone https://github.com/autolab/Tango.git
 cp Tango/requirments.txt build_tango
