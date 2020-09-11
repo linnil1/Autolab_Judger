@@ -1,0 +1,11 @@
+FROM python:3.8-slim
+RUN apt update -y && \
+    apt install -y procps make && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /home
+RUN mkdir autolab output && useradd autolab && \
+    chmod o-wx /boot /media /opt /root /sbin /dev /home /mnt /proc /run /srv /tmp /var
+# lib64 etc lib bin sys usr
+ENV LANGUAGE=python
+CMD /bin/bash

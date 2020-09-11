@@ -1,0 +1,9 @@
+FROM openjdk:8-slim
+RUN apt update -y && \
+    apt install -y procps make python3 && \
+    rm -rf /var/lib/apt/lists/*
+
+WORKDIR /home
+RUN mkdir autolab output && useradd autolab
+ENV LANGUAGE=java
+CMD /bin/bash
