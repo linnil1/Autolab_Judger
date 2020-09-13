@@ -5,7 +5,7 @@ RUN apt update -y && \
 
 WORKDIR /home
 RUN mkdir autolab output && useradd autolab && \
-    chmod o-wx /boot /media /opt /root /sbin /dev /home /mnt /proc /run /srv /tmp /var
-# lib64 etc lib bin sys usr
+    chmod o-rwx /boot /media /opt /root /sbin /dev /mnt /proc /run /srv /tmp /var
+# /lib64 /etc /lib /bin /sys /usr /home 
 ENV LANGUAGE=python
 CMD /bin/bash
