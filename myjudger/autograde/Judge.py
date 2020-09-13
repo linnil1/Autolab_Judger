@@ -10,7 +10,6 @@ scores = {"scores": {}}
 file_input = "grade.json"
 file_output = "/home/output/feedback"
 timeout_limit = 5
-need_remove = True
 DEBUG = True
 
 
@@ -78,13 +77,15 @@ def com_java():
 if __name__ == '__main__':
     open(file_output, 'w').close()
     f = open(file_output, 'a')
-    case = json.load(open("grade.json"))
+    cases = json.load(open("data.json"))
     run_type = sys.argv[1]
 
     # compile java source
     if run_type == "java":
         p = com_java()
         outs, errs, returncode, timeout = get_command_status(p)
+        if DEBUG:
+            print("DEBUG", outs, errs)
         if timeout:
             f.write("Compile timeout\n")
             sys.exit(0)
@@ -94,13 +95,13 @@ if __name__ == '__main__':
             sys.exit(0)
 
     # run each score
-    for i in range(len(case["score"])):
-        casename = f"case{i}"
+    for case in cases:
+        casename = f"case{case['case']}"
         scores["scores"][casename] = 0
-        if need_remove:
-            os.chmod(casename + ".in", 0o707)
-            open(casename + ".out", "w").close()
-            os.chmod(casename + ".out", 0o707)
+        json.dump(case['data'], open(casename + ".in", "w"))
+        os.chmod(casename + ".in", 0o707)
+        open(casename + ".out", "w").close()
+        os.chmod(casename + ".out", 0o707)
 
         if run_type == "python":
             p = run_py(casename)
@@ -126,6 +127,7 @@ if __name__ == '__main__':
         # RE for json format error
         try: 
             output = json.load(open(casename + ".out"))
+            os.remove(casename + ".in")
             os.remove(casename + ".out")
             if len(output['status']) != len(output['time']):
                 raise ValueError("RE")
@@ -136,7 +138,7 @@ if __name__ == '__main__':
         # calculate score
         isAC = all(i == "AC" for i in output["status"])
         if isAC:
-            scores["scores"][casename] = case["score"][i]
+            scores["scores"][casename] = case["score"]
 
         # show status
         f.write(casename + ":\n")

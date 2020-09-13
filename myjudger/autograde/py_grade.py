@@ -2,28 +2,36 @@ import json
 import sys
 import time
 import os
-from Solution import Solution
+
+# -----------------------------------------------
+# Custom region
+time_limit = 800
+
+
+def run(sample):
+    from Solution import Solution
+    return Solution().twoSum(sample['nums'], sample['target'])
+
+
+def compare(out, sample):
+    if type(out) is not list:
+        return False
+    if len(out) != 2:
+        return False
+    if type(out[0]) is not int or type(out[1]) is not int:
+        return False
+    return sample['answer'] == out 
+# -----------------------------------------------
+
 
 # Init
-time_limit = 800
 samples = json.load(open(sys.argv[1] + ".in"))
-need_remove = True
+open(sys.argv[1] + ".in", "w").close()
 output = {"status": [],
           "time": []}
 
-def run(sample):
-    return Solution().solve(sample["a"], sample["b"])
-
-
-def compare(out, ans):
-    return out == ans
-
-
-if need_remove:
-    open(sys.argv[1] + ".in", "w").close()
-
 # Run per sample in this case
-for sample in samples["data"]:
+for sample in samples:
     output["time"].append(0)
     output["status"].append("NA")
 
@@ -39,7 +47,7 @@ for sample in samples["data"]:
 
     # Your custom answer checker
     # Need to check the out type before comparing
-    if compare(out, sample["ans"]):
+    if compare(out, sample):
         output["status"][-1] = 'AC'
     else:
         output["status"][-1] = 'WA'

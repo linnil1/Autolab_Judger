@@ -1,25 +1,43 @@
 import com.google.gson.Gson;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.Reader;
+import java.io.FileReader;
 import java.io.Writer;
 import java.io.IOException;
+import java.util.Arrays; 
 /*
 javac -cp algs4.jar:gson.jar myjava_grade.java Solution.java
 java -cp gson.jar:algs4.jar:. myjava_grade {casename}
 */
 
 public class java_grade {
+    // Edit here
+    static boolean compare(int[] out, Sample s) {
+        return Arrays.equals(out, s.answer);
+    }
+
+    static int[] run(Sample s) {
+        return new Solution().twoSum(s.nums, s.target);
+        // return s.answer;
+    }
+
+    static class Sample {
+        int[] nums;
+        int target;
+        int[] answer;
+        public Sample() {}
+    }
+
+    // Don't edit below
     public static void main(String[] args) {
         Gson gson = new Gson();
         long clk_s;
 	long timeout_limit = 800;
 
 	// read input
-        try (Reader reader = new FileReader(args[0] + ".in")) {
-            Case cases = gson.fromJson(reader, Case.class);
-            int casenum = cases.data.length;
+        try {
+            Sample[] samples = gson.fromJson(new FileReader(args[0] + ".in"), Sample[].class);
+            int casenum = samples.length;
 
 	    // init output
             Output output = new Output(casenum);
@@ -32,10 +50,10 @@ public class java_grade {
             for(int sample=0 ; sample<casenum ; ++sample) {
                 try{
                     clk_s = System.currentTimeMillis();
-                    int out = new Solution().test(cases.data[sample].a,cases.data[sample].b);
+		    int[] out = run(samples[sample]);
                     output.time[sample] = System.currentTimeMillis() - clk_s;
 
-                    if (out == cases.data[sample].ans) {
+                    if (compare(out, samples[sample])) {
                         output.status[sample] = "AC";
                     }
                     else{
@@ -57,6 +75,7 @@ public class java_grade {
 	    fout.flush();
 	    fout.close();
             System.out.println(gson.toJson(output));
+
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -71,15 +90,5 @@ public class java_grade {
             status = new String[casenum];
             time = new long[casenum];
         };
-    }
-
-    static class Case {
-	Sample[] data;
-	public class Sample{
-	    int[] a;
-	    int[] b;
-	    int ans;
-	}
-	public Case() {}
     }
 }
