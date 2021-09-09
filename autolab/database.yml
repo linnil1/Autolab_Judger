@@ -1,19 +1,21 @@
-development:
+# MySQL Configuration used for Autolab Docker Deployments
+production:
   adapter: mysql2
-  database: autolab
+  database: autolab_development
   pool: 5
-  username: autolab
+  username: user
   password: password
+  socket: /var/run/mysqld/mysqld.sock
   host: db
   variables:
     sql_mode: NO_ENGINE_SUBSTITUTION
-
-production:
+development:
   adapter: mysql2
-  database: autolab
+  database: autolab_development
   pool: 5
-  username: autolab
+  username: user
   password: password
+  socket: /var/run/mysqld/mysqld.sock
   host: db
   variables:
     sql_mode: NO_ENGINE_SUBSTITUTION

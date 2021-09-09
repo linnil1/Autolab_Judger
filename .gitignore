@@ -4,12 +4,10 @@ Tango/
 autolab/assessmentConfig/
 autolab/courseConfig/
 autolab/courses/
-autolab/db/
 autolab/log/
 autolab/tmp/
 autolab/web_log/
 tango/courselabs/
-
-web/certs/
+tango/volume
 
 database/

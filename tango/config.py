@@ -2,10 +2,11 @@
 # config.py - Global configuration constants and runtime info
 #
 
-from builtins import object
-import logging, time
+import logging
+import time
 
 # Config - defines
+import os
 
 
 class Config(object):
@@ -18,7 +19,8 @@ class Config(object):
     # Unique prefix that defines VM name space for this Tango
     # version. When working in development, this prefix should be your
     # unique identifier. The "prod" prefix is reserved for production
-    PREFIX = "local"
+    DEFAULT_PREFIX = "local"
+    PREFIX = os.getenv("DOCKER_DEPLOYMENT", DEFAULT_PREFIX).lower()
 
     # Default port for the RESTful server to listen on.
     PORT = 3000
@@ -31,8 +33,8 @@ class Config(object):
 
     # Courselabs directory. Must be created before starting Tango
     COURSELABS = "/courselabs"
-    
-    # Directory within each courselab where Tango will copy the output 
+
+    # Directory within each courselab where Tango will copy the output
     # for jobs of that courselab
     OUTPUT_FOLDER = "output"
 
@@ -45,14 +47,16 @@ class Config(object):
     # Docker is being used as the VMMs.
     # It must be an absolute path with trailing slash, i.e
     # /opt/TangoService/Tango/volumes/
-    DOCKER_VOLUME_PATH = "/volume/"
+    DEFAULT_DOCKER_VOLUME_PATH = ""
+    DOCKER_VOLUME_PATH = os.getenv("DOCKER_VOLUME_PATH", DEFAULT_DOCKER_VOLUME_PATH)
 
     #####
     # Part 2: Constants that shouldn't need to change very often.
     #
 
     # Keys for Tango to authenticate client requests
-    KEYS = ["password"]
+    DEFAULT_KEY = "test"
+    KEYS = [os.getenv("RESTFUL_KEY", DEFAULT_KEY)]
 
     # Queue manager checks for new work every so many seconds
     DISPATCH_PERIOD = 0.2
@@ -80,10 +84,10 @@ class Config(object):
     BOOT2DOCKER_ENV_TIMEOUT = 5
     DOCKER_IMAGE_BUILD_TIMEOUT = 300
     DOCKER_RM_TIMEOUT = 5
-    DOCKER_HOST_USER = ''
+    DOCKER_HOST_USER = ""
 
     # Maximum size for input files in bytes
-    MAX_INPUT_FILE_SIZE = 250 * 1024 * 1024 # 250MB
+    MAX_INPUT_FILE_SIZE = 250 * 1024 * 1024  # 250MB
 
     # Maximum size for output file in bytes
     MAX_OUTPUT_FILE_SIZE = 1000 * 1024
@@ -108,7 +112,7 @@ class Config(object):
     CREATEVM_SECS = 1
 
     # Default vm pool size
-    POOL_SIZE = 2
+    POOL_SIZE = 8
 
     # Optionally log finer-grained timing information
     LOG_TIMING = False
@@ -132,19 +136,20 @@ class Config(object):
     # Part 4: Settings for shared memory
     #
     USE_REDIS = True
-    REDIS_HOSTNAME = "redis"
+    DEFAULT_REDIS_HOSTNAME = "127.0.0.1"
+    REDIS_HOSTNAME = os.getenv("DOCKER_REDIS_HOSTNAME", DEFAULT_REDIS_HOSTNAME).lower()
     REDIS_PORT = 6379
 
     ######
     # Part 5: EC2 Constants
     #
-    EC2_REGION = ''
-    EC2_USER_NAME = ''
-    DEFAULT_AMI = ''
-    DEFAULT_INST_TYPE = ''
-    DEFAULT_SECURITY_GROUP = ''
-    SECURITY_KEY_PATH = ''
-    DYNAMIC_SECURITY_KEY_PATH = ''
-    SECURITY_KEY_NAME = ''
-    TANGO_RESERVATION_ID = ''
+    EC2_REGION = ""
+    EC2_USER_NAME = ""
+    DEFAULT_AMI = ""
+    DEFAULT_INST_TYPE = ""
+    DEFAULT_SECURITY_GROUP = ""
+    SECURITY_KEY_PATH = ""
+    DYNAMIC_SECURITY_KEY_PATH = ""
+    SECURITY_KEY_NAME = ""
+    TANGO_RESERVATION_ID = ""
     INSTANCE_RUNNING = 16  # Status code of a instance that is running

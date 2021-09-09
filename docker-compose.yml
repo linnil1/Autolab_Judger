@@ -2,20 +2,26 @@ version: "3"
 services:
   autolab:
     image: linnil1/autolab
+    build: ./build_autolab
+    container_name: autolab_main
     restart: always
     environment:
       RESTFUL_HOST: tango_api
       RESTFUL_PORT: 3000
       RESTFUL_KEY: password
+      DOCKER_SSL: "true" # set to false for no SSL (not recommended)
+      RAILS_ENV: production
+      # RAILS_ENV: development
     # command: tail -f /dev/null
     links:
       - db
       - tango_api
+    ports:
+      - 3000:3000
     volumes:
-      - ./Autolab:/app:ro
+      - ./Autolab:/app
       - ./autolab/tmp:/app/tmp
       - ./autolab/log:/app/log
-      - ./autolab/db:/app/db
       - ./autolab/courses:/app/courses
       - ./autolab/assessmentConfig:/app/assessmentConfig
       - ./autolab/courseConfig:/app/courseConfig
@@ -24,52 +30,62 @@ services:
   db:
     image: mysql:5.7
     restart: always
+    container_name: autolab_db
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      - MYSQL_DATABASE=autolab_development
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_HOST=localhost
+      - MYSQL_PORT=3306
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
     volumes:
       - ./database:/var/lib/mysql
-
-  web:
-    image: nginx
-    restart: always
-    ports:
-      - 13000:13000
-    links:
-      - autolab
-    volumes:
-      - ./web/autolab.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./web/certs/:/certs:ro
-      - ./web/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./autolab/web_log:/var/log/nginx/
 
   redis:
     image: redis
     restart: always
-    command: redis-server /etc/redis.conf
-    volumes:
-      - ./Tango/deployment/config/redis.conf:/etc/redis.conf
+    container_name: autolab_redis
 
   tango_api:
     image: linnil1/tango
+    build: ./build_tango
+    container_name: autolab_tango_api
     restart: always
-    command: python3 restful-tango/server.py
+    command: python3 restful_tango/server.py
     links:
       - redis
     volumes:
-    - ./Tango/:/app:ro
-    - ./tango/courselabs/:/courselabs
-    - /var/run/docker.sock:/var/run/docker.sock:ro
-    - /volume/:/volume
+      - ./Tango/:/app:ro
+      - ./tango/courselabs/:/courselabs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./tango/volume/:/opt/TangoService/Tango/volumes
+    environment:
+      - DOCKER_DEPLOYMENT=prod
+      - RESTFUL_KEY=password
+      - DOCKER_REDIS_HOSTNAME=redis
+      # Path to volumes within the Tango container. Does not need to be modified.
+      - DOCKER_VOLUME_PATH=/opt/TangoService/Tango/volumes
+      # Modify the below to be the path to volumes on your host machine
+      - DOCKER_TANGO_HOST_VOLUME_PATH=/home/linnil1/autolab/tango/volume
 
   tango_manager:
     image: linnil1/tango
+    build: ./build_tango
+    container_name: autolab_tango_main
     restart: always
     command: python3 jobManager.py
     links:
       - redis
-      - web
     volumes:
-    - ./Tango/:/app:ro
-    - ./tango/courselabs/:/courselabs
-    - /var/run/docker.sock:/var/run/docker.sock:ro
-    - /volume/:/volume
+      - ./Tango/:/app:ro
+      - ./tango/courselabs/:/courselabs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./tango/volume/:/opt/TangoService/Tango/volumes
+    environment:
+      - DOCKER_DEPLOYMENT=prod
+      - RESTFUL_KEY=password
+      - DOCKER_REDIS_HOSTNAME=redis
+      # Path to volumes within the Tango container. Does not need to be modified.
+      - DOCKER_VOLUME_PATH=/opt/TangoService/Tango/volumes
+      # Modify the below to be the path to volumes on your host machine
+      - DOCKER_TANGO_HOST_VOLUME_PATH=/home/linnil1/autolab/tango/volume

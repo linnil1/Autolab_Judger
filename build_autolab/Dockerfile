@@ -8,4 +8,4 @@ RUN gem install bundler && \
     bundle install
 
 WORKDIR /app
-CMD bundle exec rails s -p 3000 --binding=0.0.0.0
+CMD bundle exec rails server -p 3000 --binding=0.0.0.0
