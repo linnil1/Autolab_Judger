@@ -1,11 +1,11 @@
-import mysql.connector 
+import pymysql
 from passlib.hash import bcrypt as hashalgo
 
-mydb = mysql.connector.connect(
-        host="172.17.0.2",
-        user="autolab",
-        database="autolab",
-        password="autolab")
+mydb = pymysql.connect(
+        host="db",
+        user="user",
+        database="autolab_development",
+        password="password")
 
 # Print all User
 cur = mydb.cursor()
@@ -16,7 +16,7 @@ for i in cur.fetchall():
 
 # Update User Password
 stus = """
-linnil1@ntu.edu.tw
+hardness1020@gmail.com
 """
 
 stus = stus.split()
