@@ -1,8 +1,0 @@
-all:
-	@sudo chown autolab:autolab -R .
-	@tar xf autograde.tar;mv autograde/* .
-	@tar xf handin.tar;mv Solution/* . >> feedback 2>&1
-	@sudo chown autolab:autolab -R .
-	@bash run.sh >> feedback 2>&1
-	@python3 answer_check.py >> feedback
-

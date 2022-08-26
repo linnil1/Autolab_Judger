@@ -6,13 +6,22 @@ services:
     container_name: autolab_main
     restart: always
     environment:
+      DOCKER_SSL: "false"
+      # DOCKER_SSL: "true"  # set to false for no SSL (not recommended)
+      HOST_PROTOCOL: http
+      HOST_DOMAIN: 0.0.0.0:3000
       RESTFUL_HOST: tango_api
       RESTFUL_PORT: 3000
-      RESTFUL_KEY: password
-      DOCKER_SSL: "true" # set to false for no SSL (not recommended)
+      RESTFUL_KEY: tango_password
       RAILS_ENV: production
       # RAILS_ENV: development
-    # command: tail -f /dev/null
+      DEVISE_SECRET_KEY: "changeThisSecret"
+      SMTP_DEFAULT_FROM: admin@c4lab.tw
+      SMTP_SETTINGS_ADDRESS: smtp.gmail.com
+      SMTP_SETTINGS_PORT: 587
+      SMTP_SETTINGS_USER_NAME: admin@c4lab.tw
+      SMTP_SETTINGS_PASSWORD: email_password
+      SMTP_SETTINGS_DOMAIN: c4lab.tw
     links:
       - db
       - tango_api
@@ -23,12 +32,11 @@ services:
       - ./autolab/tmp:/app/tmp
       - ./autolab/log:/app/log
       - ./autolab/courses:/app/courses
-      - ./autolab/assessmentConfig:/app/assessmentConfig
       - ./autolab/courseConfig:/app/courseConfig
-      - ./autolab/gradebooks:/app/gradebooks
+      - ./autolab/assessmentConfig:/app/assessmentConfig
 
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     restart: always
     container_name: autolab_db
     environment:
@@ -36,8 +44,8 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_HOST=localhost
       - MYSQL_PORT=3306
-      - MYSQL_USER=user
-      - MYSQL_PASSWORD=password
+      - MYSQL_USER=autolab
+      - MYSQL_PASSWORD=autolab_password
     volumes:
       - ./database:/var/lib/mysql
 
@@ -55,13 +63,13 @@ services:
     links:
       - redis
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./Tango/:/app:ro
       - ./tango/courselabs/:/courselabs
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./tango/volume/:/opt/TangoService/Tango/volumes
     environment:
       - DOCKER_DEPLOYMENT=prod
-      - RESTFUL_KEY=password
+      - RESTFUL_KEY=tango_password
       - DOCKER_REDIS_HOSTNAME=redis
       # Path to volumes within the Tango container. Does not need to be modified.
       - DOCKER_VOLUME_PATH=/opt/TangoService/Tango/volumes
@@ -77,13 +85,13 @@ services:
     links:
       - redis
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./Tango/:/app:ro
       - ./tango/courselabs/:/courselabs
-      - /var/run/docker.sock:/var/run/docker.sock:ro
       - ./tango/volume/:/opt/TangoService/Tango/volumes
     environment:
       - DOCKER_DEPLOYMENT=prod
-      - RESTFUL_KEY=password
+      - RESTFUL_KEY=tango_password
       - DOCKER_REDIS_HOSTNAME=redis
       # Path to volumes within the Tango container. Does not need to be modified.
       - DOCKER_VOLUME_PATH=/opt/TangoService/Tango/volumes

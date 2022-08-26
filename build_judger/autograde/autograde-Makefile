@@ -1,0 +1,6 @@
+all:
+	@tar xvf autograde.tar
+	# @tar xf handin.tar
+	chown autolab:autolab . -R
+	python3 autograde/answer_check.py > /home/output/feedback 2>&1
+
