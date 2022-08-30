@@ -28,7 +28,7 @@ def addUser(email: str, name: str):
     cur = mydb.cursor()
     cur.execute("INSERT INTO users "
                 "(email, first_name, confirmed_at) "
-                "VALUES(%s, %s, '%s')", 
+                "VALUES(%s, %s, %s)",
                 (email, name, datatime.datetime.now()))
     mydb.commit()
 

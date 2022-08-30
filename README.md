@@ -24,7 +24,7 @@ sed -i "s/config.assets.compile.*/config.assets.compile = true/g" Autolab/config
 ```
 
 and change this lines in `docker-compose.yml`
-* `DOCKER_TANGO_HOST_VOLUME_PATH=/home/linnil1/autolab/tango/volume`  (change to `$PWD/autolab/tango/volume`)
+* `DOCKER_TANGO_HOST_VOLUME_PATH=/home/linnil1/autolab/tango/volume`  (change to `$PWD/tango/volume`)
 * `DEVISE_SECRET_KEY: "changeThisSecret"`
 * ALL SMTP fields
 
@@ -122,7 +122,7 @@ cd ../..
 
 The core of judge is written in `runJob` in `Tango/vmms/localDocker.py`,
 
-which is mostly equivalent to `autodriverCmd = "cd autolab; make > ../output/feedback 2>&1` (unsafe).
+which is mostly equivalent to `args = args + ['cp -r mount/* autolab/; bash -c "cd autolab; make"; cp output/feedback mount/feedback']` (unsafe).
 
 
 ### Result
